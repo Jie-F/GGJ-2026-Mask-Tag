@@ -51,7 +51,7 @@ public class EnemyAI : MonoBehaviour
         agent.SetDestination(fleeTarget);
         //UnityEngine.Debug.Log("Enemy is FLEEING from the player");
     }
-
+    /*
     void TryGiveMaskToPlayer()
     {
         if (!MaskManager.Instance.CanTransfer())
@@ -72,5 +72,25 @@ public class EnemyAI : MonoBehaviour
                 MaskManager.Instance.TransferMask();
             }
         }
+    }*/
+
+    void TryGiveMaskToPlayer()
+    {
+        if (!MaskManager.Instance.CanTransfer())
+            return;
+
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (distance > chaseDistance)
+            return;
+
+        // Optional: check facing direction
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        float dot = Vector3.Dot(transform.forward, dirToPlayer);
+
+        if (dot < 0.5f) // not roughly facing player
+            return;
+
+        UnityEngine.Debug.Log("Enemy tagged PLAYER — mask transferred");
+        MaskManager.Instance.TransferMask();
     }
 }
