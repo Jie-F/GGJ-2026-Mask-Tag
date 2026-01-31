@@ -300,6 +300,12 @@ MonoBehaviour:
   agent: {fileID: 0}
   chaseDistance: 3
   fleeDistance: 8
+  stuckCheckInterval: 0.5
+  stuckTimeThreshold: 3
+  minMovementDistance: 0.1
+  teleportRadius: 4
+  teleportHeight: 5
+  teleportAttempts: 10
 --- !u!1 &140866722
 GameObject:
   m_ObjectHideFlags: 0
@@ -1652,7 +1658,7 @@ MonoBehaviour:
   standingCameraHeight: 1.6
   crouchCameraHeight: 1
   speed: 5
-  jumpHeight: 3
+  jumpHeight: 1.5
   gravity: -9.8
   maxSpeed: 5
   walkSpeed: 5

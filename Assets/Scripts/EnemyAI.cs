@@ -38,7 +38,7 @@ public class EnemyAI : MonoBehaviour
 
         lastPosition = transform.position;
 
-        Debug.Log("EnemyAI started");
+        UnityEngine.Debug.Log("EnemyAI started");
     }
 
     void Update()
@@ -84,7 +84,7 @@ public class EnemyAI : MonoBehaviour
         if (dot < 0.5f)
             return;
 
-        Debug.Log("Enemy tagged PLAYER — mask transferred");
+        UnityEngine.Debug.Log("Enemy tagged PLAYER — mask transferred");
         MaskManager.Instance.TransferMask();
     }
 
@@ -131,7 +131,7 @@ void TryGiveMaskToPlayer()
 
             if (stuckTimer >= stuckTimeThreshold)
             {
-                Debug.LogWarning("Enemy stuck — attempting teleport recovery");
+                UnityEngine.Debug.LogWarning("Enemy stuck — attempting teleport recovery");
                 TryTeleportToNavMesh();
                 stuckTimer = 0f;
             }
@@ -148,7 +148,7 @@ void TryGiveMaskToPlayer()
     {
         for (int i = 0; i < teleportAttempts; i++)
         {
-            Vector3 randomHorizontal = Random.insideUnitSphere * teleportRadius;
+            Vector3 randomHorizontal = UnityEngine.Random.insideUnitSphere * teleportRadius;
             randomHorizontal.y = 0f;
 
             Vector3 sampleOrigin = transform.position + randomHorizontal + Vector3.up * teleportHeight;
@@ -156,11 +156,11 @@ void TryGiveMaskToPlayer()
             if (NavMesh.SamplePosition(sampleOrigin, out NavMeshHit hit, teleportHeight * 2f, NavMesh.AllAreas))
             {
                 agent.Warp(hit.position);
-                Debug.Log("Enemy teleported to recover from stuck state");
+                UnityEngine.Debug.Log("Enemy teleported to recover from stuck state");
                 return;
             }
         }
 
-        Debug.LogError("Enemy teleport recovery failed — no valid NavMesh point found");
+        UnityEngine.Debug.LogError("Enemy teleport recovery failed — no valid NavMesh point found");
     }
 }
