@@ -2,6 +2,11 @@
 
 public class PlayerMotor : MonoBehaviour
 {
+    [Header("Camera")]
+    [SerializeField] Transform playerCamera;
+    [SerializeField] float standingCameraHeight = 1.6f;
+    [SerializeField] float crouchCameraHeight = 1.0f;
+
     private CharacterController controller;
     private Vector3 playerVelocity;
     public float speed = 5.0f;
@@ -47,24 +52,30 @@ public class PlayerMotor : MonoBehaviour
         if (lerpCrouch)
         {
             crouchTimer += Time.deltaTime;
-            float p = Mathf.Clamp01(crouchTimer / 1.0f);
-            p *= p;
-            float targetHeight = crouching ? 1f : 2f;
-            float start = controller.height;
-            float end = crouching ? crouchHeight : standingHeight;
 
-            controller.height = Mathf.Lerp(start, end, p);
+            float duration = 0.15f;
+            float p = Mathf.Clamp01(crouchTimer / duration);
+            p = p * p;
+
+            float targetHeight = crouching ? crouchHeight : standingHeight;
+            controller.height = Mathf.Lerp(controller.height, targetHeight, p);
 
             controller.center = new Vector3(
-                0,
+                0f,
                 controller.height / 2f,
-                0
+                0f
             );
 
-            if (p > 1)
+            // CAMERA
+            float camTargetY = crouching ? crouchCameraHeight : standingCameraHeight;
+            Vector3 camPos = playerCamera.localPosition;
+            camPos.y = Mathf.Lerp(camPos.y, camTargetY, p);
+            playerCamera.localPosition = camPos;
+
+            if (p >= 1f)
             {
                 lerpCrouch = false;
-                crouchTimer = 0.0f;
+                crouchTimer = 0f;
             }
         }
     }
