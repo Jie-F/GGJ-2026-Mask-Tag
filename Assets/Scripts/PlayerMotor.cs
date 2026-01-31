@@ -19,8 +19,8 @@ public class PlayerMotor : MonoBehaviour
 
     [Header("Movement")]
     public float maxSpeed;
-    public float walkSpeed = 0.50f;
-    public float runSpeed = 0.80f;
+    public float walkSpeed = 5f;
+    public float runSpeed = 8f;
     public float acceleration = 25f;
     public float deceleration = 40f;
 
@@ -47,10 +47,10 @@ public class PlayerMotor : MonoBehaviour
         if (lerpCrouch)
         {
             crouchTimer += Time.deltaTime;
-            float p = (float) (crouchTimer / 1.0);
+            float p = Mathf.Clamp01(crouchTimer / 1.0f);
             p *= p;
             float targetHeight = crouching ? 1f : 2f;
-            float start = crouching ? standingHeight : crouchHeight;
+            float start = controller.height;
             float end = crouching ? crouchHeight : standingHeight;
 
             controller.height = Mathf.Lerp(start, end, p);
@@ -122,10 +122,13 @@ public class PlayerMotor : MonoBehaviour
 
         sprinting = value;
         maxSpeed = sprinting ? runSpeed : walkSpeed;
+
+        UnityEngine.Debug.Log($"Setting sprint to {value.ToString()} and the max speed just got set to {maxSpeed.ToString()}");
     }
 
     public void SetCrouch(bool value)
     {
+        UnityEngine.Debug.Log($"Setting crouch to {value.ToString()}");
         crouching = value;
         crouchTimer = 0f;
         lerpCrouch = true;
