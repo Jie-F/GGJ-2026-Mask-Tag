@@ -1,5 +1,4 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
+﻿using UnityEngine;
 
 public class PlayerMaskInteraction : MonoBehaviour
 {
@@ -12,14 +11,6 @@ public class PlayerMaskInteraction : MonoBehaviour
     {
         cam = Camera.main;
         UnityEngine.Debug.Log("PlayerMaskInteraction ready");
-    }
-
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            TryTransferMaskToEnemy();
-        }
     }
 
     public void TryTransferMaskToEnemy()
@@ -36,11 +27,12 @@ public class PlayerMaskInteraction : MonoBehaviour
             return;
         }
 
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        // Ray from center of screen (Input System safe)
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactDistance, enemyLayer))
         {
-            UnityEngine.Debug.Log("Player clicked enemy � mask transferred to ENEMY");
+            UnityEngine.Debug.Log("Player clicked enemy — mask transferred to ENEMY");
             MaskManager.Instance.TransferMask();
         }
         else
