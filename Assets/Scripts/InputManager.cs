@@ -19,6 +19,12 @@ public class InputManager : MonoBehaviour
         motor = GetComponent<PlayerMotor>();
         look = GetComponent<PlayerLook>();
 
+        maskInteraction = GetComponent<PlayerMaskInteraction>();
+        if (maskInteraction == null)
+        {
+            UnityEngine.Debug.LogError("PlayerMaskInteraction missing on Player!");
+        }
+
         // Jump
         onFoot.Jump.performed += ctx => motor.Jump();
 
@@ -31,7 +37,7 @@ public class InputManager : MonoBehaviour
         onFoot.Sprint.canceled += ctx => motor.SetSprint(false);
 
         // LEFT CLICK - MASK TRANSFER
-        onFoot.Interact.performed += ctx => maskInteraction.TryTransferMask();
+        onFoot.Interact.performed += ctx => maskInteraction.TryTransferMaskToEnemy();
     }
 
     // Update is called once per frame

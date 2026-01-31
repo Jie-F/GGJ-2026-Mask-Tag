@@ -11,26 +11,41 @@ public class PlayerMaskInteraction : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
+        UnityEngine.Debug.Log("PlayerMaskInteraction ready");
     }
 
-    public void TryTransferMask()
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            TryTransferMaskToEnemy();
+        }
+    }
+
+    public void TryTransferMaskToEnemy()
     {
         if (MaskManager.Instance.currentOwner != MaskOwner.Player)
+        {
+            UnityEngine.Debug.Log("Player tried to transfer mask, but does not have it");
             return;
+        }
 
         if (!MaskManager.Instance.CanTransfer())
-            return;
-
-        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, interactDistance, enemyLayer))
         {
-            EnemyAI enemy = hit.collider.GetComponent<EnemyAI>();
-            if (enemy != null)
-            {
-                MaskManager.Instance.TransferMask();
-            }
+            UnityEngine.Debug.Log("Mask transfer on cooldown");
+            return;
+        }
+
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, interactDistance, enemyLayer))
+        {
+            UnityEngine.Debug.Log("Player clicked enemy — mask transferred to ENEMY");
+            MaskManager.Instance.TransferMask();
+        }
+        else
+        {
+            UnityEngine.Debug.Log("Player clicked but did not hit enemy");
         }
     }
 }

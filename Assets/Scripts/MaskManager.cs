@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using UnityEngine;
+using System.Collections;
 
 public class MaskManager : MonoBehaviour
 {
@@ -8,10 +8,10 @@ public class MaskManager : MonoBehaviour
     public MaskOwner currentOwner = MaskOwner.Player;
 
     public float maskDuration = 30f;
-    private float currentTimer;
+    float timer;
 
-    private bool canTransfer = true;
-    private float transferCooldown = 1f;
+    bool canTransfer = true;
+    float transferCooldown = 1f;
 
     void Awake()
     {
@@ -20,14 +20,15 @@ public class MaskManager : MonoBehaviour
 
     void Start()
     {
-        currentTimer = maskDuration;
+        timer = maskDuration;
+        UnityEngine.Debug.Log("Game started — PLAYER has the mask");
     }
 
     void Update()
     {
-        currentTimer -= Time.deltaTime;
+        timer -= Time.deltaTime;
 
-        if (currentTimer <= 0f)
+        if (timer <= 0f)
         {
             EndGame();
         }
@@ -40,43 +41,47 @@ public class MaskManager : MonoBehaviour
 
     public void TransferMask()
     {
-        if (!canTransfer) return;
+        if (!canTransfer)
+            return;
 
-        // Switch owner
-        currentOwner = (currentOwner == MaskOwner.Player)
+        currentOwner = currentOwner == MaskOwner.Player
             ? MaskOwner.Enemy
             : MaskOwner.Player;
 
-        // Reset timer
-        currentTimer = maskDuration;
+        timer = maskDuration;
 
-        // Start cooldown
+        UnityEngine.Debug.Log("Mask transferred — New owner: " + currentOwner);
+
         StartCoroutine(TransferCooldown());
     }
 
-    private System.Collections.IEnumerator TransferCooldown()
+    IEnumerator TransferCooldown()
     {
         canTransfer = false;
+        UnityEngine.Debug.Log("Mask transfer cooldown started");
+
         yield return new WaitForSeconds(transferCooldown);
+
         canTransfer = true;
+        UnityEngine.Debug.Log("Mask transfer cooldown ended");
     }
 
     void EndGame()
     {
         if (currentOwner == MaskOwner.Player)
         {
-            UnityEngine.Debug.Log("PLAYER DIES");
+            UnityEngine.Debug.Log("PLAYER DIED - GAME OVER");
         }
         else
         {
-            UnityEngine.Debug.Log("ENEMY DIES");
+            UnityEngine.Debug.Log("ENEMY DIED - YOU WIN");
         }
 
-        Time.timeScale = 0f; // Simple game stop
+        Time.timeScale = 0f;
     }
 
     public float GetTimerNormalized()
     {
-        return currentTimer / maskDuration;
+        return timer / maskDuration;
     }
 }
