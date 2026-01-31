@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using UnityEngine;
 
 public class PlayerLook : MonoBehaviour
@@ -8,28 +7,41 @@ public class PlayerLook : MonoBehaviour
 
     public float xSensitivity = 30.0f;
     public float ySensitivity = 30.0f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
-        
+        LockCursor();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        //
     }
 
     public void ProcessLook(Vector2 input)
     {
         float mouseX = input.x;
         float mouseY = input.y;
-        // Calculate camera rotation for looking up and down
-        xRotation -= (mouseY * Time.deltaTime) * ySensitivity;
+
+        // Vertical rotation (look up/down)
+        xRotation -= mouseY * ySensitivity * Time.deltaTime;
         xRotation = Mathf.Clamp(xRotation, -80.0f, 80.0f);
-        // Apply this to camera transform
-        cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-        // Rotate player to look left and right
-        transform.Rotate(Vector3.up * (mouseX * Time.deltaTime) * xSensitivity);
+
+        cam.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+        // Horizontal rotation (look left/right)
+        transform.Rotate(Vector3.up * mouseX * xSensitivity * Time.deltaTime);
+    }
+
+    void LockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    void UnlockCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
