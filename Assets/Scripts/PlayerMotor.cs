@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerMotor : MonoBehaviour
 {
@@ -8,17 +6,22 @@ public class PlayerMotor : MonoBehaviour
     private Vector3 playerVelocity;
     public float speed = 5.0f;
     private bool isGrounded;
-    public float gravity = -9.8f;
-    public float jumpHeight = 1.5f;
+    public float gravity = -10f;
+    public float jumpHeight = 0.5f;
     bool crouching = false;
     float crouchTimer = 1.0f;
     bool lerpCrouch = false;
     bool sprinting = false;
 
     [Header("Movement")]
-    public float maxSpeed = 5f;
-    public float acceleration = 12f;
-    public float deceleration = 16f;
+    public float maxSpeed;
+    public float walkSpeed = 5.0f;
+    public float runSpeed = 8.0f;
+    public float acceleration = 25f;
+    public float deceleration = 40f;
+
+    public float groundedAccelMultiplier = 1.0f;
+    public float airAccelMultiplier = 0.6f;
 
     private Vector3 horizontalVelocity;
 
@@ -26,6 +29,7 @@ public class PlayerMotor : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        maxSpeed = walkSpeed;
     }
 
     // Update is called once per frame
@@ -38,14 +42,12 @@ public class PlayerMotor : MonoBehaviour
             crouchTimer += Time.deltaTime;
             float p = (float) (crouchTimer / 1.0);
             p *= p;
-            if (crouching)
-            {
-                controller.height = Mathf.Lerp(controller.height, 1, p);
-            }
-            else
-            {
-                controller.height = Mathf.Lerp(controller.height, 2, p);
-            }
+            float targetHeight = crouching ? 1f : 2f;
+            controller.height = Mathf.Lerp(
+                crouching ? 2f : 1f,
+                crouching ? 1f : 2f,
+                p
+            );
 
             if (p > 1)
             {
@@ -67,8 +69,14 @@ public class PlayerMotor : MonoBehaviour
 
         // Choose accel or decel
         //float accelRate = inputDir.magnitude > 0.1f ? acceleration : deceleration;
-        float airControlMultiplier = isGrounded ? 1f : 0.4f;
-        float accelRate = (inputDir.magnitude > 0.1f ? acceleration : deceleration) * airControlMultiplier;
+        isGrounded = controller.isGrounded;
+        float airControlMultiplier = isGrounded ? groundedAccelMultiplier : airAccelMultiplier;
+        float accelRate;
+        if (isGrounded)
+            accelRate = inputDir.magnitude > 0.1f ? acceleration : deceleration;
+        else
+            accelRate = inputDir.magnitude > 0.1f ? acceleration * airAccelMultiplier : deceleration * 0.1f;
+
 
         // Smooth acceleration / sliding
         horizontalVelocity = Vector3.MoveTowards(
@@ -88,26 +96,29 @@ public class PlayerMotor : MonoBehaviour
         controller.Move(finalMove * Time.deltaTime);
     }
 
-
     public void Jump()
     {
         if (isGrounded)
         {
-            playerVelocity.y = Mathf.Sqrt(jumpHeight * -3.0f * gravity);
+            playerVelocity.y = Mathf.Sqrt(2f * jumpHeight * -gravity);
         }
     }
 
-    public void Crouch()
+    public void SetSprint(bool value)
     {
-        crouching = !crouching;
-        crouchTimer = 0.0f;
+        if (crouching) value = false;
+
+        sprinting = value;
+        maxSpeed = sprinting ? runSpeed : walkSpeed;
+    }
+
+
+    public void SetCrouch(bool value)
+    {
+        crouching = value;
+        crouchTimer = 0f;
         lerpCrouch = true;
     }
 
-    public void Sprint()
-    {
-        sprinting = !sprinting;
-        maxSpeed = sprinting ? 8f : 5f;
-    }
 
 }
