@@ -5,7 +5,7 @@ public class MaskManager : MonoBehaviour
 {
     public static MaskManager Instance;
 
-    public MaskOwner currentOwner = MaskOwner.Player;
+    public MaskOwner currentOwner = MaskOwner.Enemy;  // Initially enemy has the mask
 
     public float maskDuration = 30f;
     float timer;

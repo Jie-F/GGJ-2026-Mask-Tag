@@ -38,7 +38,7 @@ public class EnemyAI : MonoBehaviour
     void ChasePlayer()
     {
         agent.SetDestination(player.position);
-        UnityEngine.Debug.Log("Enemy is CHASING the player");
+        //UnityEngine.Debug.Log("Enemy is CHASING the player");
 
         TryGiveMaskToPlayer();
     }
@@ -49,7 +49,7 @@ public class EnemyAI : MonoBehaviour
         Vector3 fleeTarget = transform.position + awayDirection * fleeDistance;
 
         agent.SetDestination(fleeTarget);
-        UnityEngine.Debug.Log("Enemy is FLEEING from the player");
+        //UnityEngine.Debug.Log("Enemy is FLEEING from the player");
     }
 
     void TryGiveMaskToPlayer()
