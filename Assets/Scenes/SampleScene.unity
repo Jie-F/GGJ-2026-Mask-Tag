@@ -253,7 +253,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.68946, y: -1.412, z: 0.57077}
-  m_LocalScale: {x: 50, y: 0.1, z: 50}
+  m_LocalScale: {x: 200, y: 0.1, z: 200}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -439,6 +439,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &881631428 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5251680415777927472, guid: 22c730c35283e0b4e9b23da7b231b82a, type: 3}
+  m_PrefabInstance: {fileID: 638597331839403522}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &975218192
 GameObject:
   m_ObjectHideFlags: 0
@@ -632,6 +637,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48cb0e73d52cb9c48a51c5ab913aeb24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMotor
+  playerCamera: {fileID: 881631428}
+  standingCameraHeight: 1.6
+  crouchCameraHeight: 1
   speed: 5
   jumpHeight: 3
   gravity: -9.8
@@ -680,8 +688,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.7745442
+      value: 5.79
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
       propertyPath: m_LocalPosition.y
