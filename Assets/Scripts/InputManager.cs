@@ -8,6 +8,7 @@ public class InputManager : MonoBehaviour
     private PlayerInput.OnFootActions onFoot;
     private PlayerMotor motor;
     private PlayerLook look;
+    private PlayerMaskInteraction maskInteraction;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -18,6 +19,7 @@ public class InputManager : MonoBehaviour
         motor = GetComponent<PlayerMotor>();
         look = GetComponent<PlayerLook>();
 
+        // Jump
         onFoot.Jump.performed += ctx => motor.Jump();
 
         // HOLD crouch
@@ -27,8 +29,10 @@ public class InputManager : MonoBehaviour
         // HOLD sprint
         onFoot.Sprint.started += ctx => motor.SetSprint(true);
         onFoot.Sprint.canceled += ctx => motor.SetSprint(false);
-    }
 
+        // LEFT CLICK - MASK TRANSFER
+        onFoot.Interact.performed += ctx => maskInteraction.TryTransferMask();
+    }
 
     // Update is called once per frame
     void Update()
