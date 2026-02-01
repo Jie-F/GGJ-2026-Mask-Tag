@@ -788,6 +788,7 @@ GameObject:
   m_Component:
   - component: {fileID: 206271873}
   - component: {fileID: 206271874}
+  - component: {fileID: 206271875}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -830,6 +831,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
   mainMenu: {fileID: 206271872}
   settingsMenu: {fileID: 1539633650}
+--- !u!114 &206271875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206271872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3476261af73630e46b27995cf1438dcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CursorUnlocker
 --- !u!1 &331033892
 GameObject:
   m_ObjectHideFlags: 0
