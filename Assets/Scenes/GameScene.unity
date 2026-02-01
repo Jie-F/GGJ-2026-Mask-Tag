@@ -3907,6 +3907,11 @@ MonoBehaviour:
   fleeDistance: 8
   enemyRunSpeed: 5.75
   enemyChaseSpeed: 6.2
+  fleeSamples: 16
+  fleeSampleRadius: 2.5
+  fleeRepathDistance: 1.5
+  playerPredictionTime: 0.5
+  pathWeight: 0.6
   stuckCheckInterval: 0.5
   stuckTimeThreshold: 3
   minMovementDistance: 0.1
@@ -3917,6 +3922,7 @@ MonoBehaviour:
   reconnectCooldown: 3
   reconnectSampleRadius: 3
   tagStunDuration: 1
+  minTeleportDistanceFromPlayer: 8
 --- !u!195 &840312557
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5062,8 +5068,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1121436235}
   m_SourcePrefab: {fileID: 100100000, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
+--- !u!1 &1121436234 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
+  m_PrefabInstance: {fileID: 1121436233}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1121436235
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1121436234}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4207443722817456029, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}
 --- !u!1 &1160081884 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 49ffb2c261192fc49bef9d40a145d342, type: 3}

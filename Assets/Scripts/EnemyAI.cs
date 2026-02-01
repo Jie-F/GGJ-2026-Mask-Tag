@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -127,6 +127,46 @@ public class EnemyAI : MonoBehaviour
             currentFleeTarget = FindBestFleeTarget();
             agent.SetDestination(currentFleeTarget);
         }
+    }
+
+    bool TryFindRingPositionOnPlayerNavMesh(
+    Vector3 playerNavPos,
+    float minRadius,
+    float maxRadius,
+    out Vector3 result)
+    {
+        const int attempts = 40;
+
+        for (int i = 0; i < attempts; i++)
+        {
+            // Random direction
+            Vector3 dir = Random.insideUnitSphere;
+            dir.y = 0f;
+            dir.Normalize();
+
+            // Random distance in the ring
+            float dist = Random.Range(minRadius, maxRadius);
+            Vector3 candidate = playerNavPos + dir * dist;
+
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                continue;
+
+            if (!IsSafeTeleportPosition(hit.position))
+                continue;
+
+            // Ensure this spot can actually reach the player
+            if (!NavMesh.CalculatePath(hit.position, playerNavPos, NavMesh.AllAreas, sharedPath))
+                continue;
+
+            if (sharedPath.status != NavMeshPathStatus.PathComplete)
+                continue;
+
+            result = hit.position;
+            return true;
+        }
+
+        result = Vector3.zero;
+        return false;
     }
 
     Vector3 FindBestFleeTarget()
@@ -259,26 +299,19 @@ public class EnemyAI : MonoBehaviour
 
     void TeleportToPlayersNavMesh(Vector3 playerNavPos)
     {
-        // TIER 1 — Safe teleport onto player's NavMesh
-        if (TryFindSafePositionOnPlayerNavMesh(playerNavPos, out Vector3 safePos))
+        float minR = minTeleportDistanceFromPlayer;
+        float maxR = minTeleportDistanceFromPlayer + reconnectSampleRadius * 2f;
+
+        // ONLY valid teleport path
+        if (TryFindRingPositionOnPlayerNavMesh(playerNavPos, minR, maxR, out Vector3 safePos))
         {
             agent.Warp(safePos);
             SFXManager.Instance.PlayTeleport();
             return;
         }
 
-        // TIER 2 — Teleport somewhere on player's NavMesh (even if far away)
-        if (NavMesh.SamplePosition(playerNavPos, out NavMeshHit hit, reconnectSampleRadius * 2f, NavMesh.AllAreas))
-        {
-            if (Vector3.Distance(hit.position, player.position) > 0.1f)
-            {
-                agent.Warp(hit.position);
-                SFXManager.Instance.PlayTeleport();
-                return;
-            }
-        }
-
-        // TIER 3 — Can't teleport safely: move toward closest reachable point
+        // If we cannot teleport safely, DO NOT teleport
+        // Instead, move toward closest reachable point
         MoveTowardClosestReachablePoint(playerNavPos);
     }
 
