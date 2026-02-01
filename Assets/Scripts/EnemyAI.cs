@@ -7,6 +7,7 @@ public class EnemyAI : MonoBehaviour
 {
     public Transform player;
     public NavMeshAgent agent;
+    public GameObject mask;
 
     [Header("Behavior")]
     public float chaseDistance = 3f;
@@ -83,11 +84,15 @@ public class EnemyAI : MonoBehaviour
         {
             agent.speed = enemyChaseSpeed;
             ChasePlayer();
+
+            mask.SetActive(true);
         }
         else
         {
             agent.speed = enemyRunSpeed;
             FleeFromPlayer();
+
+            mask.SetActive(false);
         }
 
         CheckIfStuck();
