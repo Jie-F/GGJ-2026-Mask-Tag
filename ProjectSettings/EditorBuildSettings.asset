@@ -9,14 +9,17 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: ea9769ecd9615854bb4207c0695951ec
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/GameScene.unity
+    guid: a90b6e41dc470484b9647fe19c7969c6
   - enabled: 1
     path: Assets/Scenes/GameWon.unity
     guid: 928ac894365307f488f67e47b5ce264f
   - enabled: 1
     path: Assets/Scenes/GameOver.unity
     guid: c1916173f13d42e42bf3304afffb6802
+  - enabled: 1
+    path: Assets/Scenes/SampleScene.unity
+    guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/Scenes/Mikes Scene.unity
     guid: 40ad6af81a6929441b671b1c7b8e0053
