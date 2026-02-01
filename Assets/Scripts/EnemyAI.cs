@@ -1,8 +1,7 @@
 using System;
-using System.Diagnostics;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -12,9 +11,16 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Behavior")]
     public float chaseDistance = 3f;
-    public float fleeDistance = 8f;
+    public float fleeDistance = 10f;
     public float enemyRunSpeed = 8f;
     public float enemyChaseSpeed = 8f;
+
+    [Header("Smart Flee Settings")]
+    public int fleeSamples = 16;
+    public float fleeSampleRadius = 2.5f;
+    public float fleeRepathDistance = 1.5f;
+    public float playerPredictionTime = 0.5f;
+    public float pathWeight = 0.6f;
 
     [Header("Stuck Detection")]
     public float stuckCheckInterval = 0.25f;
@@ -26,100 +32,197 @@ public class EnemyAI : MonoBehaviour
     public float teleportHeight = 6f;
     public int teleportAttempts = 60;
 
-    private Vector3 lastPosition;
-    private float stuckTimer;
-    private float checkTimer;
-
     [Header("NavMesh Reconnection")]
     public float reconnectCheckInterval = 0.25f;
     public float reconnectCooldown = 3f;
     public float reconnectSampleRadius = 3f;
 
+    [Header("Tag Stun")]
+    public float tagStunDuration = 1f;
+
+    private Vector3 lastPosition;
+    private float stuckTimer;
+    private float checkTimer;
+
     private float reconnectTimer;
     private float lastReconnectTime;
     private NavMeshPath sharedPath;
 
-    [Header("Tag Stun")]
-    public float tagStunDuration = 1f;
-
     private bool isStunned = false;
-
+    private Vector3 currentFleeTarget;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-
         sharedPath = new NavMeshPath();
 
-
         if (player == null)
-        {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            player = playerObj.transform;
-        }
+            player = GameObject.FindGameObjectWithTag("Player").transform;
 
         lastPosition = transform.position;
 
-        // Make sure the agent is on the NavMesh
         if (!agent.isOnNavMesh)
         {
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(transform.position, out hit, 2f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, NavMesh.AllAreas))
             {
-                transform.position = hit.position;
-                agent.Warp(hit.position); // immediately place agent on NavMesh
+                agent.Warp(hit.position);
             }
             else
             {
-                UnityEngine.Debug.LogWarning("No NavMesh found near the agent!");
+                Debug.LogWarning("Enemy not placed on NavMesh!");
             }
         }
-
-        UnityEngine.Debug.Log("EnemyAI started");
     }
 
     void Update()
     {
-        // Only do the disconnected navmesh TP if the enemy is chasing the player!
-        // If the TP is done when the player is chasing the enemy, then this will TP the enemy close to the player when the player deliberately goes somewhere wacky lol
-        if (MaskManager.Instance.currentOwner == MaskOwner.Enemy)
-        {
-            CheckNavMeshConnectivity();
-        }
+        if (isStunned)
+            return;
 
         if (MaskManager.Instance.currentOwner == MaskOwner.Enemy)
         {
             agent.speed = enemyChaseSpeed;
-            ChasePlayer();
-
             mask.SetActive(true);
+
+            CheckNavMeshConnectivity();
+            ChasePlayer();
         }
         else
         {
             agent.speed = enemyRunSpeed;
-            FleeFromPlayer();
-
             mask.SetActive(false);
+
+            FleeSmart();
         }
 
         CheckIfStuck();
     }
 
+    // ============================
+    // CHASE
+    // ============================
+
+    void ChasePlayer()
+    {
+        agent.SetDestination(player.position);
+        TryGiveMaskToPlayer();
+    }
+
+    // ============================
+    // SMART FLEE
+    // ============================
+
+    void FleeSmart()
+    {
+        // Recalculate flee path if close to destination or path collapsing
+        if (!agent.hasPath || agent.remainingDistance < fleeRepathDistance)
+        {
+            currentFleeTarget = FindBestFleeTarget();
+            agent.SetDestination(currentFleeTarget);
+        }
+    }
+
+    Vector3 FindBestFleeTarget()
+    {
+        Vector3 bestTarget = transform.position;
+        float bestScore = float.MinValue;
+
+        // Predict player position
+        Vector3 predictedPlayerPos = player.position;
+        Rigidbody playerRb = player.GetComponent<Rigidbody>();
+        if (playerRb != null)
+            predictedPlayerPos += playerRb.linearVelocity * playerPredictionTime;
+
+        for (int i = 0; i < fleeSamples; i++)
+        {
+            float angle = (360f / fleeSamples) * i;
+            Vector3 dir = Quaternion.Euler(0, angle, 0) * transform.forward;
+            Vector3 candidate = transform.position + dir * fleeDistance;
+
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, fleeSampleRadius, NavMesh.AllAreas))
+                continue;
+
+            NavMeshPath path = new NavMeshPath();
+            if (!agent.CalculatePath(hit.position, path))
+                continue;
+
+            if (path.status != NavMeshPathStatus.PathComplete)
+                continue;
+
+            float playerDist = Vector3.Distance(hit.position, predictedPlayerPos);
+            float pathLength = GetPathLength(path);
+
+            // Dead-end avoidance
+            if (pathLength < fleeDistance * 0.6f && playerDist < fleeDistance)
+                continue;
+
+            float score = playerDist + pathLength * pathWeight;
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestTarget = hit.position;
+            }
+        }
+
+        // Fallback: straight away from player
+        if (bestScore == float.MinValue)
+        {
+            Vector3 fallbackDir = (transform.position - predictedPlayerPos).normalized;
+            bestTarget = transform.position + fallbackDir * fleeDistance;
+            NavMesh.SamplePosition(bestTarget, out NavMeshHit fallbackHit, fleeSampleRadius, NavMesh.AllAreas);
+            bestTarget = fallbackHit.position;
+        }
+
+        return bestTarget;
+    }
+
+    float GetPathLength(NavMeshPath path)
+    {
+        float length = 0f;
+        for (int i = 1; i < path.corners.Length; i++)
+            length += Vector3.Distance(path.corners[i - 1], path.corners[i]);
+        return length;
+    }
+
+    // ============================
+    // MASK TRANSFER
+    // ============================
+
+    void TryGiveMaskToPlayer()
+    {
+        if (!MaskManager.Instance.CanTransfer())
+            return;
+
+        if (Vector3.Distance(transform.position, player.position) > chaseDistance)
+            return;
+
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        if (Vector3.Dot(transform.forward, dirToPlayer) < 0.5f)
+            return;
+
+        MaskManager.Instance.TransferMask();
+    }
+
+    // ============================
+    // STUN
+    // ============================
+
     public IEnumerator StunEnemy()
     {
         isStunned = true;
-
-        // Stop movement
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
 
         yield return new WaitForSeconds(tagStunDuration);
 
-        // Resume movement
         agent.isStopped = false;
         isStunned = false;
     }
 
+    // ============================
+    // NAVMESH RECONNECTION
+    // ============================
 
     void CheckNavMeshConnectivity()
     {
@@ -132,24 +235,16 @@ public class EnemyAI : MonoBehaviour
         if (Time.time - lastReconnectTime < reconnectCooldown)
             return;
 
-        // Sample both positions onto NavMesh
         if (!NavMesh.SamplePosition(transform.position, out NavMeshHit enemyHit, 2f, NavMesh.AllAreas))
             return;
 
         if (!NavMesh.SamplePosition(player.position, out NavMeshHit playerHit, 2f, NavMesh.AllAreas))
             return;
 
-        // Try to calculate a path
-        bool hasPath = NavMesh.CalculatePath(
-            enemyHit.position,
-            playerHit.position,
-            NavMesh.AllAreas,
-            sharedPath
-        );
+        bool hasPath = NavMesh.CalculatePath(enemyHit.position, playerHit.position, NavMesh.AllAreas, sharedPath);
 
         if (!hasPath || sharedPath.status != NavMeshPathStatus.PathComplete)
         {
-            UnityEngine.Debug.Log("Enemy on different NavMesh component — reconnecting");
             TeleportToPlayersNavMesh(playerHit.position);
             lastReconnectTime = Time.time;
         }
@@ -157,81 +252,14 @@ public class EnemyAI : MonoBehaviour
 
     void TeleportToPlayersNavMesh(Vector3 playerNavPos)
     {
-        // Try closest point first
-        if (NavMesh.SamplePosition(
-            playerNavPos,
-            out NavMeshHit hit,
-            reconnectSampleRadius,
-            NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(playerNavPos, out NavMeshHit hit, reconnectSampleRadius, NavMesh.AllAreas))
         {
             agent.Warp(hit.position);
-            UnityEngine.Debug.Log("Enemy warped onto player's NavMesh component");
-            SFXManager.Instance.PlayTeleport();
-            return;
-        }
-
-        UnityEngine.Debug.LogWarning("Failed to warp enemy to player's NavMesh component");
-    }
-
-
-    void ChasePlayer()
-    {
-        agent.SetDestination(player.position);
-        TryGiveMaskToPlayer();
-    }
-
-    void FleeFromPlayer()
-    {
-        Vector3 awayDirection = (transform.position - player.position).normalized;
-        Vector3 fleeTarget = transform.position + awayDirection * fleeDistance;
-
-        agent.SetDestination(fleeTarget);
-    }
-
-    void TryGiveMaskToPlayer()
-    {
-        if (!MaskManager.Instance.CanTransfer())
-            return;
-
-        float distance = Vector3.Distance(transform.position, player.position);
-        if (distance > chaseDistance)
-            return;
-
-        Vector3 dirToPlayer = (player.position - transform.position).normalized;
-        float dot = Vector3.Dot(transform.forward, dirToPlayer);
-
-        if (dot < 0.5f)
-            return;
-
-        UnityEngine.Debug.Log("Enemy tagged PLAYER — mask transferred");
-        MaskManager.Instance.TransferMask();
-    }
-
-/*
-void TryGiveMaskToPlayer()
-{
-    if (!MaskManager.Instance.CanTransfer())
-        return;
-
-    float distance = Vector3.Distance(transform.position, player.position);
-    if (distance > chaseDistance)
-        return;
-
-    Vector3 direction = (player.position - transform.position).normalized;
-    Ray ray = new Ray(transform.position + Vector3.up, direction);
-
-    if (Physics.Raycast(ray, out RaycastHit hit, chaseDistance))
-    {
-        if (hit.transform == player)
-        {
-            UnityEngine.Debug.Log("Enemy transferred mask to PLAYER");
-            MaskManager.Instance.TransferMask();
         }
     }
-}*/
 
     // ============================
-    // STUCK DETECTION & RECOVERY
+    // STUCK DETECTION
     // ============================
 
     void CheckIfStuck()
@@ -242,15 +270,14 @@ void TryGiveMaskToPlayer()
 
         checkTimer = 0f;
 
-        float distanceMoved = Vector3.Distance(transform.position, lastPosition);
+        float moved = Vector3.Distance(transform.position, lastPosition);
 
-        if (distanceMoved < minMovementDistance && agent.hasPath)
+        if (moved < minMovementDistance && agent.hasPath)
         {
             stuckTimer += stuckCheckInterval;
 
             if (stuckTimer >= stuckTimeThreshold)
             {
-                UnityEngine.Debug.LogWarning("Enemy stuck — attempting teleport recovery");
                 TryTeleportToNavMesh();
                 stuckTimer = 0f;
             }
@@ -267,20 +294,16 @@ void TryGiveMaskToPlayer()
     {
         for (int i = 0; i < teleportAttempts; i++)
         {
-            Vector3 randomHorizontal = UnityEngine.Random.insideUnitSphere * teleportRadius;
-            randomHorizontal.y = 0f;
+            Vector3 offset = Random.insideUnitSphere * teleportRadius;
+            offset.y = 0f;
 
-            Vector3 sampleOrigin = transform.position + randomHorizontal + Vector3.up * teleportHeight;
+            Vector3 samplePos = transform.position + offset + Vector3.up * teleportHeight;
 
-            if (NavMesh.SamplePosition(sampleOrigin, out NavMeshHit hit, teleportHeight * 2f, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, teleportHeight * 2f, NavMesh.AllAreas))
             {
                 agent.Warp(hit.position);
-                UnityEngine.Debug.Log("Enemy teleported to recover from stuck state");
-                SFXManager.Instance.PlayTeleport();
                 return;
             }
         }
-
-        UnityEngine.Debug.LogError("Enemy teleport recovery failed — no valid NavMesh point found");
     }
 }
