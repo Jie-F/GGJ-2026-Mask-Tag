@@ -17,8 +17,8 @@ public class MusicManager : MonoBehaviour
     public AudioSource menuSource;
     public AudioSource fireSource;
     public AudioSource frozenSource;
-    //public AudioSource gameOverSource;
-    //public AudioSource gameWinSource;
+    public AudioSource gameOverSource;
+    public AudioSource gameWinSource;
 
     [Header("Settings")]
     public float fadeSpeed = 1.5f;
@@ -120,13 +120,13 @@ public class MusicManager : MonoBehaviour
     public void PlayGameOverMusic()
     {
         SetState(MusicState.GameOver);
-        //PlayExclusive(gameOverSource);
+        PlayExclusive(gameOverSource);
     }
 
     public void PlayGameWinMusic()
     {
         SetState(MusicState.GameWin);
-        //PlayExclusive(gameWinSource);
+        PlayExclusive(gameWinSource);
     }
 
     // =======================
@@ -144,8 +144,8 @@ public class MusicManager : MonoBehaviour
         menuSource.Stop();
         fireSource.Stop();
         frozenSource.Stop();
-        //gameOverSource.Stop();
-        //gameWinSource.Stop();
+        gameOverSource.Stop();
+        gameWinSource.Stop();
     }
 
     void PlayExclusive(AudioSource source)
