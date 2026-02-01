@@ -16,6 +16,7 @@ public class PlayerLook : MonoBehaviour
     void Update()
     {
         //
+        //LockCursor();
     }
 
     public void ProcessLook(Vector2 input)

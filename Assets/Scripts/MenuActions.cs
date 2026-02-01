@@ -5,6 +5,8 @@ public class MenuActions : MonoBehaviour
 {
     public void PlayGame()
     {
+        Debug.Log("Trying to play the game from the MenuActions.cs");
+        Time.timeScale = 1f;
         SceneManager.LoadScene("GameScene");
     }
 
