@@ -3600,6 +3600,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4590907354591221998, guid: 22c730c35283e0b4e9b23da7b231b82a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 837571611}
+    - targetCorrespondingSourceObject: {fileID: 4590907354591221998, guid: 22c730c35283e0b4e9b23da7b231b82a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 837571622}
     - targetCorrespondingSourceObject: {fileID: 5153527588111985826, guid: 22c730c35283e0b4e9b23da7b231b82a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 837571613}
@@ -3838,6 +3841,29 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4437824305983814871, guid: 22c730c35283e0b4e9b23da7b231b82a, type: 3}
   m_PrefabInstance: {fileID: 837571606}
   m_PrefabAsset: {fileID: 0}
+--- !u!136 &837571622
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837571607}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &840312555
 GameObject:
   m_ObjectHideFlags: 0
@@ -9377,6 +9403,7 @@ GameObject:
   - component: {fileID: 1676243896}
   - component: {fileID: 1676243895}
   - component: {fileID: 1676243894}
+  - component: {fileID: 1676243898}
   m_Layer: 0
   m_Name: Lava Moat
   m_TagString: Untagged
@@ -9477,6 +9504,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1676243898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1676243893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5980c89c783405e4fab394713577db4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LavaKill
 --- !u!1 &1683948928 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5880926315421755704, guid: 0bf51d19fc164c347a0a9bb2f2f19c4b, type: 3}
