@@ -5460,8 +5460,8 @@ MonoBehaviour:
   mask: {fileID: 481899725}
   chaseDistance: 3
   fleeDistance: 8
-  enemyRunSpeed: 5.75
-  enemyChaseSpeed: 6.2
+  enemyRunSpeed: 5.85
+  enemyChaseSpeed: 6.17
   fleeSamples: 16
   fleeSampleRadius: 2.5
   fleeRepathDistance: 1.5
@@ -5476,7 +5476,7 @@ MonoBehaviour:
   reconnectCheckInterval: 0.25
   reconnectCooldown: 3
   reconnectSampleRadius: 3
-  tagStunDuration: 1
+  tagStunDuration: 2
   minTeleportDistanceFromPlayer: 8
 --- !u!195 &840312557
 NavMeshAgent:
