@@ -3658,7 +3658,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskManager
   currentOwner: 1
-  maskDuration: 30
+  maskDuration: 36
 --- !u!4 &1632408953
 Transform:
   m_ObjectHideFlags: 0

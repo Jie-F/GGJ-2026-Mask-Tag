@@ -72,7 +72,12 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        CheckNavMeshConnectivity();
+        // Only do the disconnected navmesh TP if the enemy is chasing the player!
+        // If the TP is done when the player is chasing the enemy, then this will TP the enemy close to the player when the player deliberately goes somewhere wacky lol
+        if (MaskManager.Instance.currentOwner == MaskOwner.Enemy)
+        {
+            CheckNavMeshConnectivity();
+        }
 
         if (MaskManager.Instance.currentOwner == MaskOwner.Enemy)
         {
@@ -133,6 +138,7 @@ public class EnemyAI : MonoBehaviour
         {
             agent.Warp(hit.position);
             UnityEngine.Debug.Log("Enemy warped onto player's NavMesh component");
+            SFXManager.Instance.PlayTeleport();
             return;
         }
 
@@ -242,6 +248,7 @@ void TryGiveMaskToPlayer()
             {
                 agent.Warp(hit.position);
                 UnityEngine.Debug.Log("Enemy teleported to recover from stuck state");
+                SFXManager.Instance.PlayTeleport();
                 return;
             }
         }
