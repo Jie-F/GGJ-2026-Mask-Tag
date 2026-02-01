@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MaskManager : MonoBehaviour
@@ -15,6 +15,11 @@ public class MaskManager : MonoBehaviour
     bool canTransfer = true;
     float transferCooldown = 3f;
 
+    [Header("Mask Prefab Settings")]
+    public GameObject maskPrefab;
+    PrefabAnimatorController maskAnimatorController;
+
+
     void Awake()
     {
         Instance = this;
@@ -23,7 +28,16 @@ public class MaskManager : MonoBehaviour
     void Start()
     {
         timer = maskDuration;
-        UnityEngine.Debug.Log("Game started � PLAYER has the mask");
+        UnityEngine.Debug.Log("Game started, and the ENEMY has the mask");
+
+        // Ensure maskPrefab is hidden initially
+        if (maskPrefab != null)
+        {
+            maskPrefab.SetActive(false);
+            maskAnimatorController = maskPrefab.GetComponent<PrefabAnimatorController>();
+            if (maskAnimatorController == null)
+                Debug.LogWarning("PrefabAnimatorController not found on maskPrefab!");
+        }
     }
 
     void Update()
@@ -56,10 +70,23 @@ public class MaskManager : MonoBehaviour
             {
                 enemyAI.StartCoroutine(enemyAI.StunEnemy());
             }
+
+            // Hide mask from player
+            if (maskPrefab != null)
+                maskPrefab.SetActive(false);
         } else
         {
             currentOwner = MaskOwner.Player;
             MusicManager.Instance.PlayFireMusic();
+
+
+            // Show mask on player and play animation
+            if (maskPrefab != null)
+            {
+                maskPrefab.SetActive(true); // show it
+                if (maskAnimatorController != null)
+                    maskAnimatorController.PlayMaskKill(); // start animation
+            }
         }
 
         timer = maskDuration;
