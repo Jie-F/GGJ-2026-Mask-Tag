@@ -127,6 +127,7 @@ public class MusicManager : MonoBehaviour
     {
         SetState(MusicState.GameWin);
         PlayExclusive(gameWinSource);
+        Time.timeScale = 1f;
     }
 
     // =======================

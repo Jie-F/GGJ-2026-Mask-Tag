@@ -115,12 +115,14 @@ public class MaskManager : MonoBehaviour
             UnityEngine.Debug.Log("PLAYER DIED - GAME OVER");
             SceneManager.LoadScene("GameOver");
             MusicManager.Instance.PlayGameOverMusic();
+            Time.timeScale = 1f;
         }
         else
         {
             UnityEngine.Debug.Log("ENEMY DIED - YOU WIN");
             SceneManager.LoadScene("GameWon");
             MusicManager.Instance.PlayGameWinMusic();
+            Time.timeScale = 1f;
         }
 
         Time.timeScale = 0f;
