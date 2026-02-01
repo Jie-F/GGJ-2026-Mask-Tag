@@ -26,9 +26,20 @@ public class EnemyAI : MonoBehaviour
     private float stuckTimer;
     private float checkTimer;
 
+    [Header("NavMesh Reconnection")]
+    public float reconnectCheckInterval = 0.25f;
+    public float reconnectCooldown = 3f;
+    public float reconnectSampleRadius = 3f;
+
+    private float reconnectTimer;
+    private float lastReconnectTime;
+    private NavMeshPath sharedPath;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+
+        sharedPath = new NavMeshPath();
 
 
         if (player == null)
@@ -59,6 +70,8 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
+        CheckNavMeshConnectivity();
+
         if (MaskManager.Instance.currentOwner == MaskOwner.Enemy)
         {
             ChasePlayer();
@@ -70,6 +83,58 @@ public class EnemyAI : MonoBehaviour
 
         CheckIfStuck();
     }
+
+    void CheckNavMeshConnectivity()
+    {
+        reconnectTimer += Time.deltaTime;
+        if (reconnectTimer < reconnectCheckInterval)
+            return;
+
+        reconnectTimer = 0f;
+
+        if (Time.time - lastReconnectTime < reconnectCooldown)
+            return;
+
+        // Sample both positions onto NavMesh
+        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit enemyHit, 2f, NavMesh.AllAreas))
+            return;
+
+        if (!NavMesh.SamplePosition(player.position, out NavMeshHit playerHit, 2f, NavMesh.AllAreas))
+            return;
+
+        // Try to calculate a path
+        bool hasPath = NavMesh.CalculatePath(
+            enemyHit.position,
+            playerHit.position,
+            NavMesh.AllAreas,
+            sharedPath
+        );
+
+        if (!hasPath || sharedPath.status != NavMeshPathStatus.PathComplete)
+        {
+            UnityEngine.Debug.Log("Enemy on different NavMesh component — reconnecting");
+            TeleportToPlayersNavMesh(playerHit.position);
+            lastReconnectTime = Time.time;
+        }
+    }
+
+    void TeleportToPlayersNavMesh(Vector3 playerNavPos)
+    {
+        // Try closest point first
+        if (NavMesh.SamplePosition(
+            playerNavPos,
+            out NavMeshHit hit,
+            reconnectSampleRadius,
+            NavMesh.AllAreas))
+        {
+            agent.Warp(hit.position);
+            UnityEngine.Debug.Log("Enemy warped onto player's NavMesh component");
+            return;
+        }
+
+        UnityEngine.Debug.LogWarning("Failed to warp enemy to player's NavMesh component");
+    }
+
 
     void ChasePlayer()
     {
