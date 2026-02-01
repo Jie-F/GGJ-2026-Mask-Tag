@@ -14,12 +14,14 @@ public class MainMenu : MonoBehaviour
 
     public void ShowMainMenu()
     {
+        UnityEngine.Debug.Log("ShowMainMenu Called");
         mainMenu.SetActive(true);
         settingsMenu.SetActive(false);
     }
 
     public void ShowSettingsMenu()
     {
+        UnityEngine.Debug.Log("ShowSettingsMenu Called");
         mainMenu.SetActive(false);
         settingsMenu.SetActive(true);
     }

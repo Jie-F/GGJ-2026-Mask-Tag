@@ -30,6 +30,7 @@ public class EnemyAI : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
 
+
         if (player == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -37,6 +38,21 @@ public class EnemyAI : MonoBehaviour
         }
 
         lastPosition = transform.position;
+
+        // Make sure the agent is on the NavMesh
+        if (!agent.isOnNavMesh)
+        {
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(transform.position, out hit, 2f, NavMesh.AllAreas))
+            {
+                transform.position = hit.position;
+                agent.Warp(hit.position); // immediately place agent on NavMesh
+            }
+            else
+            {
+                UnityEngine.Debug.LogWarning("No NavMesh found near the agent!");
+            }
+        }
 
         UnityEngine.Debug.Log("EnemyAI started");
     }
