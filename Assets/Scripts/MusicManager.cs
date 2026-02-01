@@ -105,6 +105,18 @@ public class MusicManager : MonoBehaviour
         if (!frozenSource.isPlaying) frozenSource.Play();
     }
 
+    public void PlayFireMusic()
+    {
+        SetState(MusicState.Gameplay);
+        fireSource.Play();
+    }
+
+    public void PlayFrozenMusic()
+    {
+        SetState(MusicState.Gameplay);
+        frozenSource.Play();
+    }
+
     public void PlayGameOverMusic()
     {
         SetState(MusicState.GameOver);
@@ -159,7 +171,7 @@ public class MusicManager : MonoBehaviour
             fireSource.volume = Mathf.MoveTowards(fireSource.volume, 0f, Time.deltaTime / fadeSpeed);
         }
 
-        float t = 1f - MaskManager.Instance.GetTimerNormalized();
-        fireSource.pitch = Mathf.Clamp(1f + t * 0.1f, 1f, 1.1f);
+        //float t = 1f - MaskManager.Instance.GetTimerNormalized();
+        //fireSource.pitch = Mathf.Clamp(1f + t * 0.1f, 1f, 1.1f);
     }
 }

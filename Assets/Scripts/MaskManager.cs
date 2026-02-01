@@ -45,13 +45,20 @@ public class MaskManager : MonoBehaviour
         if (!canTransfer)
             return;
 
-        currentOwner = currentOwner == MaskOwner.Player
-            ? MaskOwner.Enemy
-            : MaskOwner.Player;
+        if (currentOwner == MaskOwner.Player)
+        {
+            currentOwner = MaskOwner.Enemy;
+            MusicManager.Instance.PlayFrozenMusic();
+        } else
+        {
+            currentOwner = MaskOwner.Player;
+            MusicManager.Instance.PlayFireMusic();
+        }
 
         timer = maskDuration;
 
         UnityEngine.Debug.Log("Mask transferred — New owner: " + currentOwner);
+
 
         StartCoroutine(TransferCooldown());
     }

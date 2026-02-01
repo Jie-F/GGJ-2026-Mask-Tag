@@ -12,6 +12,7 @@ public class PlayerMaskInteraction : MonoBehaviour
     {
         cam = Camera.main;
         UnityEngine.Debug.Log("PlayerMaskInteraction ready");
+        MusicManager.Instance.PlayFrozenMusic();
     }
 
     public void TryTransferMaskToEnemy()
