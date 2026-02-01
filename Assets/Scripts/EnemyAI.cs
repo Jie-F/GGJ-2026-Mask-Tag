@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -39,6 +38,9 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Tag Stun")]
     public float tagStunDuration = 1f;
+
+    [Header("Teleport Safety")]
+    public float minTeleportDistanceFromPlayer = 8f;
 
     private Vector3 lastPosition;
     private float stuckTimer;
@@ -96,6 +98,11 @@ public class EnemyAI : MonoBehaviour
         }
 
         CheckIfStuck();
+    }
+
+    bool IsSafeTeleportPosition(Vector3 position)
+    {
+        return Vector3.Distance(position, player.position) >= minTeleportDistanceFromPlayer;
     }
 
     // ============================
@@ -252,11 +259,38 @@ public class EnemyAI : MonoBehaviour
 
     void TeleportToPlayersNavMesh(Vector3 playerNavPos)
     {
-        if (NavMesh.SamplePosition(playerNavPos, out NavMeshHit hit, reconnectSampleRadius, NavMesh.AllAreas))
+        // TIER 1 — Safe teleport onto player's NavMesh
+        if (TryFindSafePositionOnPlayerNavMesh(playerNavPos, out Vector3 safePos))
         {
-            agent.Warp(hit.position);
-
+            agent.Warp(safePos);
             SFXManager.Instance.PlayTeleport();
+            return;
+        }
+
+        // TIER 2 — Teleport somewhere on player's NavMesh (even if far away)
+        if (NavMesh.SamplePosition(playerNavPos, out NavMeshHit hit, reconnectSampleRadius * 2f, NavMesh.AllAreas))
+        {
+            if (Vector3.Distance(hit.position, player.position) > 0.1f)
+            {
+                agent.Warp(hit.position);
+                SFXManager.Instance.PlayTeleport();
+                return;
+            }
+        }
+
+        // TIER 3 — Can't teleport safely: move toward closest reachable point
+        MoveTowardClosestReachablePoint(playerNavPos);
+    }
+
+    void MoveTowardClosestReachablePoint(Vector3 targetPos)
+    {
+        // Find nearest point on enemy's NavMesh toward the player
+        Vector3 direction = (targetPos - transform.position).normalized;
+        Vector3 probe = transform.position + direction * fleeDistance;
+
+        if (NavMesh.SamplePosition(probe, out NavMeshHit hit, fleeDistance, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
         }
     }
 
@@ -292,6 +326,42 @@ public class EnemyAI : MonoBehaviour
         lastPosition = transform.position;
     }
 
+    bool TryFindSafePositionOnPlayerNavMesh(
+    Vector3 playerNavPos,
+    out Vector3 result)
+    {
+        float searchRadius = reconnectSampleRadius;
+        int attempts = 20;
+
+        for (int i = 0; i < attempts; i++)
+        {
+            Vector3 randomOffset = Random.insideUnitSphere * searchRadius;
+            randomOffset.y = 0f;
+
+            Vector3 candidate = playerNavPos + randomOffset;
+
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+                continue;
+
+            // Must be far enough from player
+            if (!IsSafeTeleportPosition(hit.position))
+                continue;
+
+            // Must be connected to the player
+            if (!NavMesh.CalculatePath(hit.position, playerNavPos, NavMesh.AllAreas, sharedPath))
+                continue;
+
+            if (sharedPath.status != NavMeshPathStatus.PathComplete)
+                continue;
+
+            result = hit.position;
+            return true;
+        }
+
+        result = Vector3.zero;
+        return false;
+    }
+
     void TryTeleportToNavMesh()
     {
         for (int i = 0; i < teleportAttempts; i++)
@@ -299,14 +369,20 @@ public class EnemyAI : MonoBehaviour
             Vector3 offset = UnityEngine.Random.insideUnitSphere * teleportRadius;
             offset.y = 0f;
 
-            Vector3 samplePos = transform.position + offset + Vector3.up * teleportHeight;
+            Vector3 samplePos =
+                transform.position +
+                offset +
+                Vector3.up * teleportHeight;
 
-            if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, teleportHeight * 2f, NavMesh.AllAreas))
-            {
-                agent.Warp(hit.position);
-                SFXManager.Instance.PlayTeleport();
-                return;
-            }
+            if (!NavMesh.SamplePosition(samplePos, out NavMeshHit hit, teleportHeight * 2f, NavMesh.AllAreas))
+                continue;
+
+            if (!IsSafeTeleportPosition(hit.position))
+                continue;
+
+            agent.Warp(hit.position);
+            SFXManager.Instance.PlayTeleport();
+            return;
         }
     }
 }
