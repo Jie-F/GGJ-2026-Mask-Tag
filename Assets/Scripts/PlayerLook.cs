@@ -39,7 +39,7 @@ public class PlayerLook : MonoBehaviour
         Cursor.visible = false;
     }
 
-    void UnlockCursor()
+    public void UnlockCursor()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

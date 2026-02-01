@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class MaskManager : MonoBehaviour
 {
@@ -71,10 +72,12 @@ public class MaskManager : MonoBehaviour
         if (currentOwner == MaskOwner.Player)
         {
             UnityEngine.Debug.Log("PLAYER DIED - GAME OVER");
+            SceneManager.LoadScene("GameOver");
         }
         else
         {
             UnityEngine.Debug.Log("ENEMY DIED - YOU WIN");
+            SceneManager.LoadScene("GameWon");
         }
 
         Time.timeScale = 0f;
