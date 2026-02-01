@@ -12,7 +12,7 @@ public class MaskManager : MonoBehaviour
     float timer;
 
     bool canTransfer = true;
-    float transferCooldown = 1f;
+    float transferCooldown = 3f;
 
     void Awake()
     {
