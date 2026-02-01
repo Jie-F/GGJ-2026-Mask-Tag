@@ -255,6 +255,8 @@ public class EnemyAI : MonoBehaviour
         if (NavMesh.SamplePosition(playerNavPos, out NavMeshHit hit, reconnectSampleRadius, NavMesh.AllAreas))
         {
             agent.Warp(hit.position);
+
+            SFXManager.Instance.PlayTeleport();
         }
     }
 
@@ -294,7 +296,7 @@ public class EnemyAI : MonoBehaviour
     {
         for (int i = 0; i < teleportAttempts; i++)
         {
-            Vector3 offset = Random.insideUnitSphere * teleportRadius;
+            Vector3 offset = UnityEngine.Random.insideUnitSphere * teleportRadius;
             offset.y = 0f;
 
             Vector3 samplePos = transform.position + offset + Vector3.up * teleportHeight;
@@ -302,6 +304,7 @@ public class EnemyAI : MonoBehaviour
             if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, teleportHeight * 2f, NavMesh.AllAreas))
             {
                 agent.Warp(hit.position);
+                SFXManager.Instance.PlayTeleport();
                 return;
             }
         }
