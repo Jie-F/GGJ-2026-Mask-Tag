@@ -4364,6 +4364,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1354207168430625351}
     m_Modifications:
+    - target: {fileID: 4860602505204426909, guid: f59b5e6a68da59b4a8c8903755ceb100, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e74517321aa11a0459dbaac369d4e014, type: 2}
     - target: {fileID: 5750063268577611456, guid: f59b5e6a68da59b4a8c8903755ceb100, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.0057361536
@@ -4416,6 +4420,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5852854391379343871, guid: f59b5e6a68da59b4a8c8903755ceb100, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e74517321aa11a0459dbaac369d4e014, type: 2}
     - target: {fileID: 9213730383184029433, guid: f59b5e6a68da59b4a8c8903755ceb100, type: 3}
       propertyPath: m_Name
       value: Mask Prefab
