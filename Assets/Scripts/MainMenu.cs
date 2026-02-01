@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour
     void Start()
     {
         ShowMainMenu();
+        MusicManager.Instance.PlayMenuMusic();
     }
 
     public void ShowMainMenu()
