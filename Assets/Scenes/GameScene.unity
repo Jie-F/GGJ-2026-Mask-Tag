@@ -3366,9 +3366,9 @@ MonoBehaviour:
   speed: 5
   jumpHeight: 1.5
   gravity: -9.8
-  maxSpeed: 5
-  walkSpeed: 5
-  runSpeed: 8
+  maxSpeed: 6
+  walkSpeed: 3
+  runSpeed: 6
   acceleration: 12
   deceleration: 16
   groundedAccelMultiplier: 1
@@ -3424,8 +3424,8 @@ MonoBehaviour:
   agent: {fileID: 0}
   chaseDistance: 3
   fleeDistance: 8
-  enemyRunSpeed: 7.8
-  enemyChaseSpeed: 8.1
+  enemyRunSpeed: 5.9
+  enemyChaseSpeed: 6.2
   stuckCheckInterval: 0.5
   stuckTimeThreshold: 3
   minMovementDistance: 0.1
