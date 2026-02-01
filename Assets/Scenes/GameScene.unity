@@ -3913,6 +3913,7 @@ MonoBehaviour:
   reconnectCheckInterval: 0.25
   reconnectCooldown: 3
   reconnectSampleRadius: 3
+  tagStunDuration: 1
 --- !u!195 &840312557
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -4024,7 +4025,7 @@ Transform:
   m_GameObject: {fileID: 840312555}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24.4, y: 60.11, z: -104}
+  m_LocalPosition: {x: 24.4, y: 59.78, z: -104}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8425,6 +8426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MaskManager
   currentOwner: 1
+  enemy: {fileID: 840312555}
   maskDuration: 38
 --- !u!4 &1632408953
 Transform:
@@ -10797,7 +10799,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1868764378
 MonoBehaviour:
   m_ObjectHideFlags: 0

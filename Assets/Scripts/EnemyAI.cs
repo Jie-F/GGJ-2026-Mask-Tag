@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -37,6 +38,12 @@ public class EnemyAI : MonoBehaviour
     private float reconnectTimer;
     private float lastReconnectTime;
     private NavMeshPath sharedPath;
+
+    [Header("Tag Stun")]
+    public float tagStunDuration = 1f;
+
+    private bool isStunned = false;
+
 
     void Start()
     {
@@ -97,6 +104,22 @@ public class EnemyAI : MonoBehaviour
 
         CheckIfStuck();
     }
+
+    public IEnumerator StunEnemy()
+    {
+        isStunned = true;
+
+        // Stop movement
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        yield return new WaitForSeconds(tagStunDuration);
+
+        // Resume movement
+        agent.isStopped = false;
+        isStunned = false;
+    }
+
 
     void CheckNavMeshConnectivity()
     {

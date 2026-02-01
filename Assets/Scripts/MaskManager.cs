@@ -7,6 +7,7 @@ public class MaskManager : MonoBehaviour
     public static MaskManager Instance;
 
     public MaskOwner currentOwner = MaskOwner.Enemy;  // Initially enemy has the mask
+    public GameObject enemy;
 
     public float maskDuration = 30f;
     float timer;
@@ -22,7 +23,7 @@ public class MaskManager : MonoBehaviour
     void Start()
     {
         timer = maskDuration;
-        UnityEngine.Debug.Log("Game started — PLAYER has the mask");
+        UnityEngine.Debug.Log("Game started ï¿½ PLAYER has the mask");
     }
 
     void Update()
@@ -49,6 +50,12 @@ public class MaskManager : MonoBehaviour
         {
             currentOwner = MaskOwner.Enemy;
             MusicManager.Instance.PlayFrozenMusic();
+
+            EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+            if (enemyAI != null)
+            {
+                enemyAI.StartCoroutine(enemyAI.StunEnemy());
+            }
         } else
         {
             currentOwner = MaskOwner.Player;
@@ -57,7 +64,7 @@ public class MaskManager : MonoBehaviour
 
         timer = maskDuration;
 
-        UnityEngine.Debug.Log("Mask transferred — New owner: " + currentOwner);
+        UnityEngine.Debug.Log("Mask transferred ï¿½ New owner: " + currentOwner);
 
 
         StartCoroutine(TransferCooldown());
