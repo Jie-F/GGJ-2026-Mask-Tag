@@ -3369,8 +3369,8 @@ MonoBehaviour:
   maxSpeed: 6
   walkSpeed: 3
   runSpeed: 6
-  acceleration: 12
-  deceleration: 16
+  acceleration: 20
+  deceleration: 30
   groundedAccelMultiplier: 1
   airAccelMultiplier: 0.6
   standingHeight: 2
