@@ -1825,12 +1825,17 @@ MonoBehaviour:
   agent: {fileID: 0}
   chaseDistance: 3
   fleeDistance: 8
+  enemyRunSpeed: 7.8
+  enemyChaseSpeed: 8.1
   stuckCheckInterval: 0.5
   stuckTimeThreshold: 3
   minMovementDistance: 0.1
   teleportRadius: 4
   teleportHeight: 5
   teleportAttempts: 10
+  reconnectCheckInterval: 0.25
+  reconnectCooldown: 3
+  reconnectSampleRadius: 3
 --- !u!195 &840312557
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1841,7 +1846,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -1372625422
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 8
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120

@@ -11,16 +11,18 @@ public class EnemyAI : MonoBehaviour
     [Header("Behavior")]
     public float chaseDistance = 3f;
     public float fleeDistance = 8f;
+    public float enemyRunSpeed = 8f;
+    public float enemyChaseSpeed = 8f;
 
     [Header("Stuck Detection")]
-    public float stuckCheckInterval = 0.5f;
+    public float stuckCheckInterval = 0.25f;
     public float stuckTimeThreshold = 3f;
-    public float minMovementDistance = 0.1f;
+    public float minMovementDistance = 1.0f;
 
     [Header("Teleport Recovery")]
-    public float teleportRadius = 4f;
-    public float teleportHeight = 5f;
-    public int teleportAttempts = 10;
+    public float teleportRadius = 6f;
+    public float teleportHeight = 6f;
+    public int teleportAttempts = 60;
 
     private Vector3 lastPosition;
     private float stuckTimer;
@@ -74,10 +76,12 @@ public class EnemyAI : MonoBehaviour
 
         if (MaskManager.Instance.currentOwner == MaskOwner.Enemy)
         {
+            agent.speed = enemyChaseSpeed;
             ChasePlayer();
         }
         else
         {
+            agent.speed = enemyRunSpeed;
             FleeFromPlayer();
         }
 
