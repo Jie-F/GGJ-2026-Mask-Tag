@@ -17,7 +17,7 @@ MonoBehaviour:
     supportSSR: 0
     supportSSRTransparent: 0
     supportSSAO: 1
-    supportSSGI: 0
+    supportSSGI: 1
     supportSubsurfaceScattering: 1
     subsurfaceScatteringAttenuation: 1
     sssSampleBudget:
@@ -109,7 +109,7 @@ MonoBehaviour:
         serializedVersion: 2
         m_Bits: 0
       supportFabricConvolution: 0
-      maxDirectionalLightsOnScreen: 16
+      maxDirectionalLightsOnScreen: 25
       maxPunctualLightsOnScreen: 512
       maxAreaLightsOnScreen: 64
       maxCubeReflectionOnScreen: 32
