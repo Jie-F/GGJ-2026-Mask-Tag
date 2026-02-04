@@ -31,6 +31,10 @@ public class SettingsMenu : MonoBehaviour
     public void ApplySensitivity(float value)
     {
         PlayerPrefs.SetFloat("MouseSensitivity", value);
+
+        PlayerLook look = FindObjectOfType<PlayerLook>();
+        if (look != null)
+            look.SetSensitivity(value);
     }
 
     public void ApplyFullscreen(bool isFullscreen)

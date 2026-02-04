@@ -11,12 +11,22 @@ public class PlayerLook : MonoBehaviour
     void Start()
     {
         LockCursor();
+
+        float sens = PlayerPrefs.GetFloat("MouseSensitivity", 2f);
+        xSensitivity = sens;
+        ySensitivity = sens;
     }
 
     void Update()
     {
         //
         //LockCursor();
+    }
+
+    public void SetSensitivity(float value)
+    {
+        xSensitivity = value;
+        ySensitivity = value;
     }
 
     public void ProcessLook(Vector2 input)
