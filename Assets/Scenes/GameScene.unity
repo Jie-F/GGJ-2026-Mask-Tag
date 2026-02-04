@@ -9389,8 +9389,8 @@ MonoBehaviour:
   mask: {fileID: 481899725}
   chaseDistance: 3
   fleeDistance: 8
-  enemyRunSpeed: 5.85
-  enemyChaseSpeed: 6.17
+  enemyRunSpeed: 5.95
+  enemyChaseSpeed: 6.2
   fleeSamples: 16
   fleeSampleRadius: 2.5
   fleeRepathDistance: 1.5
