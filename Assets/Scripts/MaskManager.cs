@@ -8,6 +8,7 @@ public class MaskManager : MonoBehaviour
 
     public MaskOwner currentOwner = MaskOwner.Enemy;  // Initially enemy has the mask
     public GameObject enemy;
+    public GameObject player;
 
     public float maskDuration = 30f;
     float timer;
@@ -87,6 +88,10 @@ public class MaskManager : MonoBehaviour
                 if (maskAnimatorController != null)
                     maskAnimatorController.PlayMaskKill(); // start animation
             }
+
+            PlayerMotor motor = player.GetComponent<PlayerMotor>();
+            if (motor != null)
+                StartCoroutine(motor.StunPlayer());
         }
 
         timer = maskDuration;

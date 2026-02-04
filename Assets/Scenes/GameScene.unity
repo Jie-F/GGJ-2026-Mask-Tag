@@ -9311,6 +9311,7 @@ MonoBehaviour:
   airAccelMultiplier: 0.6
   standingHeight: 2
   crouchHeight: 1
+  tagStunDuration: 1
 --- !u!114 &837571615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17673,6 +17674,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MaskManager
   currentOwner: 1
   enemy: {fileID: 840312555}
+  player: {fileID: 837571607}
   maskDuration: 38
   maskPrefab: {fileID: 1387794621}
 --- !u!4 &1632408953

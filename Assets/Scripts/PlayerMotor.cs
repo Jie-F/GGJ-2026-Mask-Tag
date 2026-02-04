@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class PlayerMotor : MonoBehaviour
 {
@@ -36,6 +37,11 @@ public class PlayerMotor : MonoBehaviour
 
     [SerializeField] float standingHeight = 2f;
     [SerializeField] float crouchHeight = 1f;
+
+    [Header("Tag Stun")]
+    [SerializeField] float tagStunDuration = 1f;
+
+    private bool isStunned = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -82,6 +88,9 @@ public class PlayerMotor : MonoBehaviour
 
     public void ProcessMove(Vector2 input)
     {
+        if (isStunned)
+            return;
+
         // Input direction (world space)
         Vector3 inputDir = new Vector3(input.x, 0f, input.y);
         inputDir = transform.TransformDirection(inputDir);
@@ -121,6 +130,9 @@ public class PlayerMotor : MonoBehaviour
 
     public void Jump()
     {
+        if (isStunned)
+            return;
+
         if (controller.isGrounded)
         {
             playerVelocity.y = Mathf.Sqrt(2f * jumpHeight * -gravity);
@@ -143,5 +155,18 @@ public class PlayerMotor : MonoBehaviour
         crouching = value;
         crouchTimer = 0f;
         lerpCrouch = true;
+    }
+
+    public IEnumerator StunPlayer()
+    {
+        isStunned = true;
+
+        // Stop existing motion immediately
+        horizontalVelocity = Vector3.zero;
+        playerVelocity = Vector3.zero;
+
+        yield return new WaitForSeconds(tagStunDuration);
+
+        isStunned = false;
     }
 }
